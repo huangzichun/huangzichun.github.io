@@ -1,0 +1,14 @@
+---
+layout:     post
+title:      This is a test
+subtitle:   Say hello to the world
+date:       2017-02-05
+author:     HC
+header-img: img/post-bg-ios9-web.jpg
+catalog: true
+tags:
+    - test
+    - test
+    - test
+    - test
+---
