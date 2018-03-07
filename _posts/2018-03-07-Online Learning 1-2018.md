@@ -33,6 +33,6 @@ tags:
 
 ​	在线学习则是以当前数据驱动的方式，实时更新模型（这里的更新不是指重新训练模型，而是根据当前数据，对模型对必要的实时改修）。所以在线学习的优势体现在了他的Real-time update and prediction和Data Scalability之上。
 
-
+$1/2 * 5 \mathbf{55}$
 
 
