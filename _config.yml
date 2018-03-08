@@ -12,7 +12,7 @@ github_repo: "https://github.com/huangzichun/huangzichun.github.io.git" # you co
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "我叫侧边栏"
-sidebar-avatar: /img/QQ图片20160129114141.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/weixin.png      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
