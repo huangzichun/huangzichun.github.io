@@ -68,7 +68,7 @@ $$
 
 # 3. Gaussian Process Regression
 
-​	GPR可以算作是比贝叶斯线性回归更加general的一个模型。GPR是说，与其想参数$W$的先验，不如就直接想回归函数的先验分布。所以GPR的先验不是定义在参数上，而是模型本身。那么为啥不直接考虑参数$W$的先验呢？原因是我们模型$f$是潜在的无穷维度的，而以前的方式在有限维度上work。所以大牛们说：** The Gaussian process is a natural generalization of the multivariate Gaussian distribution to potentially infinite settings**
+​	GPR可以算作是比贝叶斯线性回归更加general的一个模型。GPR是说，与其想参数$W$的先验，不如就直接想回归函数的先验分布。所以GPR的先验不是定义在参数上，而是模型本身。那么为啥不直接考虑参数$W$的先验呢？原因是我们模型$f$是潜在的无穷维度的，而以前的方式在有限维度上work。所以大牛们说：**The Gaussian process is a natural generalization of the multivariate Gaussian distribution to potentially infinite settings**
 
 ​	对于GP的正式定义，这里就不写（抄）了。简单来说，GP可以由mean function $\mu(X)$和covariance function（或者叫kernel） $K(X,X)$唯一确定。可以写成：
 $$
@@ -100,7 +100,7 @@ P(f^0   \mid X^0  , X,f)=N(\mu_{0}(X^0  ),K_{0}(X^0  ,X^0  ))\\
 \mu_{0}(X^0  )=\mu(X^0  )+K(X^0  ,X)K^{-1}(f-\mu(X))\\
 K_{0}(X^0  ,X^0  )=K(X,X^0  )-K(X^0  ,X)K^{-1}K(X,X^0  )
 $$
-​	事实上，对于GP来说，他的后验均值可以看做是** weighted combination of kernel function** ，这里的weight $\alpha_{i}=K(X,X)^{-1}(f(X_{i}-\mu(X_{i})))$
+​	事实上，对于GP来说，他的后验均值可以看做是**weighted combination of kernel function** ，这里的weight $\alpha_{i}=K(X,X)^{-1}(f(X_{i}-\mu(X_{i})))$
 $$
 \mu_{0}(X^0  )=\mu(X^0  )+K(X^0  ,X)K^{-1}(f-\mu(X))\\
 =\mu(X^0  ) + \sum^N_{i=1} \alpha_iK(X_i,X^0  )
@@ -132,11 +132,12 @@ $$
 2. 第二项是Occam's razor，有负号，所以也是越大越好。等价于det V越小越好，由于噪声的方差实际中没法控制，所以，考虑gp的方差越小越好，模型变化范围小，能表达数据的能力小，模型趋于简单。
 3. 最后当然是数据越多越好了
 
+
 总的来说，log marginal likelihood越大越好。下面的两个图，是在kernel为$K=\lambda^2exp(\frac{||x-x'||^2}{2l^2})$的时候，模型在不同超参下的，marginal likelihood的大小。
 
 
-![](img/gp31.png) 
-![](https://github.com/huangzichun/huangzichun.github.io/tree/master/img/gp32.png) 
+![](/img/gp31.png) 
+![](/img/gp32.png) 
 
 
 
