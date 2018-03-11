@@ -49,25 +49,26 @@ cov(y,W)=cov(XW+\varepsilon, W) = cov(XW,W)=X\Sigma
 $$
 
 那么，我们也可以得到参数的后验分布
+
 $$
 P(W\mid X,y, \mu, \Sigma,\sigma^2)=N(\mu_W,\Sigma_W)\\
 \mu_W=\mu + \Sigma X^T (X \Sigma X^T+\sigma^2I)^{-1}(y-X\mu)\\
 \Sigma_W=\Sigma-\Sigma X^T(X\Sigma X^T + \sigma^2I)^{-1} X \Sigma
 $$
 
-一般来说，对于test data $X^*$，我们可以采用点估计的方式，比如$W=\mu_{W}$，进行预测$f(X^*)=X^*\mu_{W}$。当参数的先验分布服从$N(0,s^2I)$的时候，这里后验对应的结果就等价于ridge regression 。对于预测来说，另一种方式是采用Predictive distribution，这种预测方式就约等于是把参数空间里的所有取值都取了个边，然后结合模型预测值做了一个加权平均。给定test data $X^*$，他的predictive distribution表示为
+一般来说，对于test data $X^\cent $，我们可以采用点估计的方式，比如$W=\mu_{W}$，进行预测$f(X^\cent )=X^\cent \mu_{W}$。当参数的先验分布服从$N(0,s^2I)$的时候，这里后验对应的结果就等价于ridge regression 。对于预测来说，另一种方式是采用Predictive distribution，这种预测方式就约等于是把参数空间里的所有取值都取了个边，然后结合模型预测值做了一个加权平均。给定test data $X^\cent $，他的predictive distribution表示为
 
 $$
-P(y^*|X,y,X^*,\mu,\Sigma,\sigma^2)\\
-=\int P(y^*\mid W, X^*, \sigma^2)P(W \mid X,y,\mu,\Sigma,\sigma^2)dW\\
-=N(X^*\mu_W,X^*\Sigma_W (X^*)^T+\sigma^2I)
+P(y^\cent |X,y,X^\cent ,\mu,\Sigma,\sigma^2)\\
+=\int P(y^\cent \mid W, X^\cent , \sigma^2)P(W \mid X,y,\mu,\Sigma,\sigma^2)dW\\
+=N(X^\cent \mu_W,X^\cent \Sigma_W (X^\cent )^T+\sigma^2I)
 $$
 
 幸运的是，对于高斯分布来说，他的predictive distribution也是一个高斯。有趣的是，对于这个问题，点估计的结果和predictive distribution的预测结果都是一样的，但是predictive distribution还可以给出预测的方差，作为预测结果的置信度，这一方面是点估计做不到的。
 
 # 3. Gaussian Process Regression
 
-​	GPR可以算作是比贝叶斯线性回归更加general的一个模型。GPR是说，与其想参数$W$的先验，不如就直接想回归函数的先验分布。所以GPR的先验不是定义在参数上，而是模型本身。那么为啥不直接考虑参数$W$的先验呢？原因是我们模型$f$是潜在的无穷维度的，而以前的方式在有限维度上work。所以大牛们说：**The Gaussian process is a natural generalization of the multivariate Gaussian distribution to potentially infinite settings**
+​	GPR可以算作是比贝叶斯线性回归更加general的一个模型。GPR是说，与其想参数$W$的先验，不如就直接想回归函数的先验分布。所以GPR的先验不是定义在参数上，而是模型本身。那么为啥不直接考虑参数$W$的先验呢？原因是我们模型$f$是潜在的无穷维度的，而以前的方式在有限维度上work。所以大牛们说：** The Gaussian process is a natural generalization of the multivariate Gaussian distribution to potentially infinite settings**
 
 ​	对于GP的正式定义，这里就不写（抄）了。简单来说，GP可以由mean function $\mu(X)$和covariance function（或者叫kernel） $K(X,X)$唯一确定。可以写成：
 $$
@@ -82,27 +83,27 @@ $$
 
 ![](img/gp1.png)
 
-​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^*$，我们要求预测值$f^*=f(X^*)$。那么联合概率可以表示为：
+​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^\cent $，我们要求预测值$f^\cent =f(X^\cent )$。那么联合概率可以表示为：
 $$
-P(f,f^*)=N \left(\begin{bmatrix}
+P(f,f^\cent )=N \left(\begin{bmatrix}
 \mu(X)
 \\ 
-X\mu(X^*)
+X\mu(X^\cent )
 \end{bmatrix},\begin{bmatrix}
-K(X,X) & K(X,X^*)\\ 
-K(X^*,X) & K(X^*,X^*)
+K(X,X) & K(X,X^\cent )\\ 
+K(X^\cent ,X) & K(X^\cent ,X^\cent )
 \end{bmatrix} \right)
 $$
 ​	那么，进一步得到条件概率的形式。需要一说的是，GPR也是可以考虑noise的情况的，这里没有再做推导，具体方法可以参考Bayesian Linear Regression。（下面的公式中的$K^{-1}=K(X, X)^{-1}$，或者考虑有高斯noise，$K^{-1}=(K(X, X)+\sigma^2I)^{-1}$）。这个解的形式，和之前的Bayesian Ridge Regression的形式是很相似的，实际上，当mean function等于0，kernel取值$K=XX^T$的时候，两个模型是等价的
 $$
-P(f^* \mid X^*, X,f)=N(\mu_{0}(X^*),K_{0}(X^*,X^*))\\
-\mu_{0}(X^*)=\mu(X^*)+K(X^*,X)K^{-1}(f-\mu(X))\\
-K_{0}(X^*,X^*)=K(X,X^*)-K(X^*,X)K^{-1}K(X,X^*)
+P(f^\cent  \mid X^\cent , X,f)=N(\mu_{0}(X^\cent ),K_{0}(X^\cent ,X^\cent ))\\
+\mu_{0}(X^\cent )=\mu(X^\cent )+K(X^\cent ,X)K^{-1}(f-\mu(X))\\
+K_{0}(X^\cent ,X^\cent )=K(X,X^\cent )-K(X^\cent ,X)K^{-1}K(X,X^\cent )
 $$
-​	事实上，对于GP来说，他的后验均值可以看做是**weighted combination of kernel function**，这里的weight $\alpha_{i}=K(X,X)^{-1}(f(X_{i}-\mu(X_{i})))$
+​	事实上，对于GP来说，他的后验均值可以看做是** weighted combination of kernel function** ，这里的weight $\alpha_{i}=K(X,X)^{-1}(f(X_{i}-\mu(X_{i})))$
 $$
-\mu_{0}(X^*)=\mu(X^*)+K(X^*,X)K^{-1}(f-\mu(X))\\
-=\mu(X^*) + \sum^N_{i=1} \alpha_iK(X_i,X^*)
+\mu_{0}(X^\cent )=\mu(X^\cent )+K(X^\cent ,X)K^{-1}(f-\mu(X))\\
+=\mu(X^\cent ) + \sum^N_{i=1} \alpha_iK(X_i,X^\cent )
 $$
 有了条件分布的形式，那么就可以给出采样，或者说预测的图
 
