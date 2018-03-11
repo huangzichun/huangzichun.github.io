@@ -56,12 +56,12 @@ P(W\mid X,y, \mu, \Sigma,\sigma^2)=N(\mu_W,\Sigma_W)\\
 \Sigma_W=\Sigma-\Sigma X^T(X\Sigma X^T + \sigma^2I)^{-1} X \Sigma
 $$
 
-一般来说，对于test data $X^\cent $，我们可以采用点估计的方式，比如$W=\mu_{W}$，进行预测$f(X^\cent )=X^\cent \mu_{W}$。当参数的先验分布服从$N(0,s^2I)$的时候，这里后验对应的结果就等价于ridge regression 。对于预测来说，另一种方式是采用Predictive distribution，这种预测方式就约等于是把参数空间里的所有取值都取了个边，然后结合模型预测值做了一个加权平均。给定test data $X^\cent $，他的predictive distribution表示为
+一般来说，对于test data $X^0  $，我们可以采用点估计的方式，比如$W=\mu_{W}$，进行预测$f(X^0  )=X^0  \mu_{W}$。当参数的先验分布服从$N(0,s^2I)$的时候，这里后验对应的结果就等价于ridge regression 。对于预测来说，另一种方式是采用Predictive distribution，这种预测方式就约等于是把参数空间里的所有取值都取了个边，然后结合模型预测值做了一个加权平均。给定test data $X^0  $，他的predictive distribution表示为
 
 $$
-P(y^\cent |X,y,X^\cent ,\mu,\Sigma,\sigma^2)\\
-=\int P(y^\cent \mid W, X^\cent , \sigma^2)P(W \mid X,y,\mu,\Sigma,\sigma^2)dW\\
-=N(X^\cent \mu_W,X^\cent \Sigma_W (X^\cent )^T+\sigma^2I)
+P(y^0  |X,y,X^0  ,\mu,\Sigma,\sigma^2)\\
+=\int P(y^0  \mid W, X^0  , \sigma^2)P(W \mid X,y,\mu,\Sigma,\sigma^2)dW\\
+=N(X^0  \mu_W,X^0  \Sigma_W (X^0  )^T+\sigma^2I)
 $$
 
 幸运的是，对于高斯分布来说，他的predictive distribution也是一个高斯。有趣的是，对于这个问题，点估计的结果和predictive distribution的预测结果都是一样的，但是predictive distribution还可以给出预测的方差，作为预测结果的置信度，这一方面是点估计做不到的。
@@ -83,27 +83,27 @@ $$
 
 ![](img/gp1.png)
 
-​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^\cent $，我们要求预测值$f^\cent =f(X^\cent )$。那么联合概率可以表示为：
+​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^0  $，我们要求预测值$f^0  =f(X^0  )$。那么联合概率可以表示为：
 $$
-P(f,f^\cent )=N \left(\begin{bmatrix}
+P(f,f^0  )=N \left(\begin{bmatrix}
 \mu(X)
 \\ 
-X\mu(X^\cent )
+X\mu(X^0  )
 \end{bmatrix},\begin{bmatrix}
-K(X,X) & K(X,X^\cent )\\ 
-K(X^\cent ,X) & K(X^\cent ,X^\cent )
+K(X,X) & K(X,X^0  )\\ 
+K(X^0  ,X) & K(X^0  ,X^0  )
 \end{bmatrix} \right)
 $$
 ​	那么，进一步得到条件概率的形式。需要一说的是，GPR也是可以考虑noise的情况的，这里没有再做推导，具体方法可以参考Bayesian Linear Regression。（下面的公式中的$K^{-1}=K(X, X)^{-1}$，或者考虑有高斯noise，$K^{-1}=(K(X, X)+\sigma^2I)^{-1}$）。这个解的形式，和之前的Bayesian Ridge Regression的形式是很相似的，实际上，当mean function等于0，kernel取值$K=XX^T$的时候，两个模型是等价的
 $$
-P(f^\cent  \mid X^\cent , X,f)=N(\mu_{0}(X^\cent ),K_{0}(X^\cent ,X^\cent ))\\
-\mu_{0}(X^\cent )=\mu(X^\cent )+K(X^\cent ,X)K^{-1}(f-\mu(X))\\
-K_{0}(X^\cent ,X^\cent )=K(X,X^\cent )-K(X^\cent ,X)K^{-1}K(X,X^\cent )
+P(f^0   \mid X^0  , X,f)=N(\mu_{0}(X^0  ),K_{0}(X^0  ,X^0  ))\\
+\mu_{0}(X^0  )=\mu(X^0  )+K(X^0  ,X)K^{-1}(f-\mu(X))\\
+K_{0}(X^0  ,X^0  )=K(X,X^0  )-K(X^0  ,X)K^{-1}K(X,X^0  )
 $$
 ​	事实上，对于GP来说，他的后验均值可以看做是** weighted combination of kernel function** ，这里的weight $\alpha_{i}=K(X,X)^{-1}(f(X_{i}-\mu(X_{i})))$
 $$
-\mu_{0}(X^\cent )=\mu(X^\cent )+K(X^\cent ,X)K^{-1}(f-\mu(X))\\
-=\mu(X^\cent ) + \sum^N_{i=1} \alpha_iK(X_i,X^\cent )
+\mu_{0}(X^0  )=\mu(X^0  )+K(X^0  ,X)K^{-1}(f-\mu(X))\\
+=\mu(X^0  ) + \sum^N_{i=1} \alpha_iK(X_i,X^0  )
 $$
 有了条件分布的形式，那么就可以给出采样，或者说预测的图
 
