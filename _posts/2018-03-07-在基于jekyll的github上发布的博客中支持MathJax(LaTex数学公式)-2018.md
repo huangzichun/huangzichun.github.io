@@ -9,6 +9,7 @@ catalog: true
 tags:
     - jekyll
     - MathJax
+    - Others
 ---
 
 [^知乎答案]: https://www.zhihu.com/question/62114522
