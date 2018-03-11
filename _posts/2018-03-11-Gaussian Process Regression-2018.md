@@ -135,10 +135,8 @@ $$
 总的来说，log marginal likelihood越大越好。下面的两个图，是在kernel为$K=\lambda^2exp(\frac{||x-x'||^2}{2l^2})$的时候，模型在不同超参下的，marginal likelihood的大小。
 
 
-
-| ![](img/gp31.png) |
-| -------------------- |
-| ![](img/gp32.png) |
+![](img/gp31.png) 
+![](https://github.com/huangzichun/huangzichun.github.io/tree/master/img/gp32.png) 
 
 
 
