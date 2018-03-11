@@ -23,7 +23,7 @@ L(Y, f(X))=(Y-X\beta)^T(Y-X\beta)  \\
 \beta=(X^TX)^{-1}X^TY
 $$
 
-![](img/lr1.png)
+![](/img/lr1.png)
 
 
 # 2. Bayesian Linear Regression
@@ -81,7 +81,7 @@ $$
 
 下图是一个GP的采样例子，横轴是x，纵轴是取值。给定一个$x_{1}$，它对应的mean function和kernel都唯一确定，那么这个点处的分布也确定，那么就可以根据这个分布采样了，然后对于下一个数据$x_{2}$，我们需要在已知$x_{1}$的时候，计算条件分布，然后采样，依次类推。这个过程其实就是在预测数据
 
-![](img/gp1.png)
+![](/img/gp1.png)
 
 ​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^0  $，我们要求预测值$f^0  =f(X^0  )$。那么联合概率可以表示为：
 $$
@@ -107,7 +107,7 @@ $$
 $$
 有了条件分布的形式，那么就可以给出采样，或者说预测的图
 
-![](img/gp2.png)
+![](/img/gp2.png)
 
 ​	主要到图里有阴影部分，这个是表示预测的方差（置信度）。对于存在数据的地方，预测方差很小，否则不确定性越大。这里也是GPR有一个优于贝叶斯线性回归的地方，GPR的后验分布直接能给出预测方差，而不需要借助predictive distribution遍历参数空间做一个加权和。当然GPR的求解会涉及到（增量式）矩阵求逆，这个操作是很耗时的，是GPR的一个大bug。
 
@@ -133,7 +133,7 @@ $$
 3. 最后当然是数据越多越好了
 
 
-总的来说，log marginal likelihood越大越好。下面的两个图，是在kernel为$K=\lambda^2exp(\frac{||x-x'||^2}{2l^2})$的时候，模型在不同超参下的，marginal likelihood的大小。
+总的来说，log marginal likelihood越大越好。下面的两个图，是在kernel为$K=\lambda^2exp(\frac{\mid \mid x-x' \mid \mid^2}{2l^2})$的时候，模型在不同超参下的，marginal likelihood的大小。
 
 
 ![](/img/gp31.png) 
