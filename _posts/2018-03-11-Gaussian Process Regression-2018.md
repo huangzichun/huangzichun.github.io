@@ -17,11 +17,14 @@ tags:
 # 1. Linear Regression
 
 ​	线性回归问题是机器学习中最为基础的一个回归模型。线性回归使用了square loss，旨在使用一个线性函数$f(X)=X\beta$来拟合当前数据。为了简单方便，这里不考虑kernel extension的情况。其优化目标$L(Y,f(X))$和solution可以写作下式。这里假设solution $\beta$中的$X^TX$是可逆的（否则可以考虑GD的方式求解，或者做特征选择，做降维，或者考虑加入L2范数，以去掉trivial solution）。这里的$\widehat{Y}=X\beta$是响应变量$Y$在数据$X$的feature列空间下的正交投影。
+
 $$
 L(Y, f(X))=(Y-X\beta)^T(Y-X\beta)  \\
 \beta=(X^TX)^{-1}X^TY
 $$
-![](../img/lr1.png)
+
+![](img/lr1.png)
+
 
 # 2. Bayesian Linear Regression
 
@@ -31,6 +34,7 @@ W \sim N(\mu, \Sigma)\\
 f \sim N(X\mu, X\sigma X^T) \\
 y \sim N(X\mu, X\Sigma X^T+\sigma^2I)
 $$
+
 根据高斯分布的性质，可以得到参数和响应变量的联合分布。
 $$
 P(W,y \mid X,\mu.\sigma^2,\Sigma)=N \left(\begin{bmatrix}
@@ -43,18 +47,22 @@ X\Sigma & X\Sigma X^T + \sigma^2I
 \end{bmatrix} \right) \\
 cov(y,W)=cov(XW+\varepsilon, W) = cov(XW,W)=X\Sigma
 $$
+
 那么，我们也可以得到参数的后验分布
 $$
 P(W\mid X,y, \mu, \Sigma,\sigma^2)=N(\mu_W,\Sigma_W)\\
 \mu_W=\mu + \Sigma X^T (X \Sigma X^T+\sigma^2I)^{-1}(y-X\mu)\\
 \Sigma_W=\Sigma-\Sigma X^T(X\Sigma X^T + \sigma^2I)^{-1} X \Sigma
 $$
+
 一般来说，对于test data $X^*$，我们可以采用点估计的方式，比如$W=\mu_{W}$，进行预测$f(X^*)=X^*\mu_{W}$。当参数的先验分布服从$N(0,s^2I)$的时候，这里后验对应的结果就等价于ridge regression 。对于预测来说，另一种方式是采用Predictive distribution，这种预测方式就约等于是把参数空间里的所有取值都取了个边，然后结合模型预测值做了一个加权平均。给定test data $X^*$，他的predictive distribution表示为
+
 $$
 P(y^*|X,y,X^*,\mu,\Sigma,\sigma^2)\\
 =\int P(y^*\mid W, X^*, \sigma^2)P(W \mid X,y,\mu,\Sigma,\sigma^2)dW\\
 =N(X^*\mu_W,X^*\Sigma_W (X^*)^T+\sigma^2I)
 $$
+
 幸运的是，对于高斯分布来说，他的predictive distribution也是一个高斯。有趣的是，对于这个问题，点估计的结果和predictive distribution的预测结果都是一样的，但是predictive distribution还可以给出预测的方差，作为预测结果的置信度，这一方面是点估计做不到的。
 
 # 3. Gaussian Process Regression
@@ -72,7 +80,7 @@ $$
 
 下图是一个GP的采样例子，横轴是x，纵轴是取值。给定一个$x_{1}$，它对应的mean function和kernel都唯一确定，那么这个点处的分布也确定，那么就可以根据这个分布采样了，然后对于下一个数据$x_{2}$，我们需要在已知$x_{1}$的时候，计算条件分布，然后采样，依次类推。这个过程其实就是在预测数据
 
-![](../img/gp1.png)
+![](img/gp1.png)
 
 ​	那么GPR是怎么预测数据的呢？这个过程和之前的Bayesian Linear Regression类似，是从联合概率推后验概率。给定已有的训练数据$X$，回归值$f$ 和test data $X^*$，我们要求预测值$f^*=f(X^*)$。那么联合概率可以表示为：
 $$
@@ -98,7 +106,7 @@ $$
 $$
 有了条件分布的形式，那么就可以给出采样，或者说预测的图
 
-![](../img/gp2.png)
+![](img/gp2.png)
 
 ​	主要到图里有阴影部分，这个是表示预测的方差（置信度）。对于存在数据的地方，预测方差很小，否则不确定性越大。这里也是GPR有一个优于贝叶斯线性回归的地方，GPR的后验分布直接能给出预测方差，而不需要借助predictive distribution遍历参数空间做一个加权和。当然GPR的求解会涉及到（增量式）矩阵求逆，这个操作是很耗时的，是GPR的一个大bug。
 
@@ -127,9 +135,9 @@ $$
 
 
 
-| ![](../img/gp31.png) |
+| ![](img/gp31.png) |
 | -------------------- |
-| ![](../img/gp32.png) |
+| ![](img/gp32.png) |
 
 
 
