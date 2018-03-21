@@ -26,12 +26,18 @@ tags:
 
 - **Trade-off between Accuracy and Efficiency** 
 
-   ​	如果要离线重新训练模型，那么为了保持效率，则必须牺牲模型精度。比如采用一定时间内的数据来做模型的重新训练等等
+   	如果要离线重新训练模型，那么为了保持效率，则必须牺牲模型精度。比如采用一定时间内的数据来做模型的重新训练等等
+
+![](../img/offline.png)
+
+
 
 # 2. Online Learning
 
-​	在线学习则是以当前数据驱动的方式，实时更新模型（这里的更新不是指重新训练模型，而是根据当前数据，对模型对必要的实时改修）。所以在线学习的优势体现在了他的Real-time update and prediction和Data Scalability之上。
+​	在线学习则是以当前数据驱动的方式，实时更新模型（这里的更新不是指重新训练模型，而是根据当前数据，对模型对必要的实时改修）。所以在线学习的优势体现在了他的Real-time update and prediction和Data Scalability之上。如下面的流程图所示。对于新到来的数据，模型首先对他进行预测，根据预测结果，模型suffer loss。然后，模型收到feedback信息，最后更新模型。这里模型的更新一般来说会用到feedback的信息，比如ground truth 。当然feedback也不一定都是存在的，如半监督在线学习用无标签数据来更新模型。
 
-TODO
+![](../img/online.png)
+
+
 
 
