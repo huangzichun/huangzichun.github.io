@@ -49,9 +49,11 @@ tags:
 本文首先采用标签割裂的思想，把标签分割开来，单独学习一个分类器。这让模型可以更直接的去处理tail label，但是，就extreme问题来说，除非采用并行策略，否则训练复杂度是很大的。
 
 不管怎么样，问题已经变成了一个对单一标签的robust optimization的问题（robust optimization就是在数据或者参数存在不确定性的情况下的优化问题）。这里的robust是通过间接加入了“扰动数据”来实现的：
+
 $$
 \min_\limits{w}\max_\limits{(\widehat{x}_1, \widehat{x}_2, ..., \widehat{x}_N)}\sum_{i=1}^N \max(0, 1-s_i(<w,x_i-\widehat{x}_i>))
 $$
+
 式子中的$\widehat{x}$是扰动数据，并且假设uncertainty set 是$\widehat{X}=\{(\widehat{x}_1, \widehat{x}_2, ..., \widehat{x}_N) \mid \sum_{i=1}^N \mid \mid \widehat{x}_i \mid \mid _\infty  < \lambda' \}$ ，这里用$\lambda'$参数限制了扰动的大小，$s_{i}$表示数据$x_{i}$的标签中是否含有对应的标签，含有则为1，否则是-1，而$w$是模型参数。这个优化问题是min-max，这里的max是说，在给定模型w的时候，要找到一组扰动数据，使得求和那一坨误差最大化，而最大化出现的条件就是当数据$x_{i}$存在某个标签的时候（$s_{i}=1$），扰动数据$\widehat{x}_{i}$要和真实数据$x_{i}$的预测结果要相似；反之，当数据$x_{i}$不存在某个标签的时候（$s_{i}=-1$），扰动数据$\widehat{x}_{i}$要和真实数据$x_{i}$的预测结果要有差异。然后外层对w求min，旨在找出一个模型能竟可能的正确分类，最小分类误差。
 
 具体的求解方法，这里就不描（Chao）述（Xie）了。作者是将上式转换成另一个等价的形式，这个形式可以看成是regularized SVM。具体方法可以去看看另一篇文章 Robustness and Regularization of Support Vector Machines (JMLR'09)。（你会发现就方法论上，本文没有啥亮点，不过问题还是好的哈）。最后，作者采用了比较经典的Proximal gradient优化方法来求解，关于这个解法的组会ppt，可以在实验室网站上下载。
