@@ -308,3 +308,40 @@ java.lang.IllegalArgumentException:java.net.URISyntaxException: Relative path in
 
 
 
+
+# 4. Hive on Spark
+
+Hive原生是通过mapreduce来执行的，Hive on Spark将执行器改为spark执行。根据Hive的官网显示，Hive 2.3.x和Spark 2.0.0版本比较兼容，其他版本的Spark没有进行测试。本文采用的Spark是2.3版本的，目前暂时没有出现兼容问题。
+
+Hive on Spark的配置比较简单。
+
+1. 首先将Spark的相关jar包以及Scala的相关jar包（这些jar包能在spark/scala的安装路径的lib或者jars文件夹下找到），拷贝至Hive的lib文件夹下
+
+   ```shell
+   cd /usr/local/scala-2.12.5/lib
+   sudo mv scala-library /usr/local/apache-hive-2.3.2-bin/lib
+   cd /usr/local/spark-2.3.0-bin-hadoop2.7/jars
+   sudo mv spark-network-common_2.11-2.3.0.jar spark-core_2.11-2.3.0.jar /usr/local/apache-hive-2.3.2-bin/lib
+   ```
+
+
+2. 修改hive的相关配置
+
+   1. 临时修改：每次启动hive cli的时候，需要重新设置才能生效。
+
+      在hive cli中设置相关配置项：
+
+      ```shell
+      set hive.execution.engine=spark;
+      set spark.master=localhost;
+      set spark.eventLog.enabled=true;
+      set spark.eventLog.dir=/usr/local/spark-2.3.0-bin-hadoop2.7/logs;
+      set spark.executor.memory=512m;             
+      set spark.serializer=org.apache.spark.serializer.KryoSerializer;
+      ```
+
+      当然，上面的语句也可以写在一个.sql文件中，比如sparksetting.sql。每次通过命令``hive -i sparksetting.sql``来启动hive cli。启动的时候会自动的执行sparksetting文件。
+
+   2. 永久修改：
+
+      在hive-conf.xml文件中修改``hive.execution.engine``项为``spark``。对于其他项，可以写在spark-default.conf文件中，然后将文件放在hive的classpath里，或者也可以直接修改hive-conf.xml文件。
