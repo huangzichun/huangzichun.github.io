@@ -302,8 +302,8 @@ java.lang.IllegalArgumentException:java.net.URISyntaxException: Relative path in
 ## 3.3 验证安装
 
 1. shell中执行``hive``，进入hive 命令行接口CLI。
-2. 也可以在shell中输入``hiveserver2``，
-   1. 然后在另一个shell中输入``beeline -u jdbc:hive2:\\``或者``beeline -u jdbc:hive2://localhost:10000``。
+2. 也可以在shell中输入``hiveserver2``，hiveserver2用于处理client端查询任务的hive服务
+   1. 然后在另一个shell中输入``beeline -u jdbc:hive2:\\``或者``beeline -u jdbc:hive2://localhost:10000``。beeline是一个基于SQLLine CLI开发的JDBC客户端，用于和hiveserver2交互。
    2. 或者进入web界面，``http://localhost:10002``
 
 
