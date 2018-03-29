@@ -301,7 +301,8 @@ java.lang.IllegalArgumentException:java.net.URISyntaxException: Relative path in
 
 ## 3.3 验证安装
 
-shell中执行``hive``，进入hive shell。
+1. shell中执行``hive``，进入hive shell。
+2. 也可以在shell中输入``hiveserver2``，然后在另一个shell中输入``beeline -u jdbc:hive2:\\``或者``beeline -u jdbc:hive2://localhost:10000``
 
 
 
