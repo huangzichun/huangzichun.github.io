@@ -103,16 +103,18 @@ CL关注模型的学习是从易到难，在样本或Task层面上来说，CL优
 
   ​
 
-  **【AAAI 2019】Query the right thing at the right time:** 这篇文章结合了课程学习（具体来说是自步学习）和主动学习。让模型训练的时候，同时考虑样本的不确定性和样本学习的难易程度。他的优化目标为下式
-  $$
-  min_{f,w,v} \sum_{i=1}^{n_l} (y_i - f(x_i))^2+ \sum_{j=1}^{n_u} [v_j w_j (\hat{y_j} - f(x_j)^2\\ 
-  + \lambda(\frac{1}{2}v_j^2-v_j)]+\mu(w^TKw+kw) + \gamma|f|^2 \\
-  s.t. w_j \in [0,1], v_j \in [0,1], \forall j=1,...,n_u \\
-  where, \hat{y_j} = -sign(f(x_j))
-  $$
+**【AAAI 2019】Query the right thing at the right time:** 这篇文章结合了课程学习（具体来说是自步学习）和主动学习。让模型训练的时候，同时考虑样本的不确定性和样本学习的难易程度。他的优化目标为下式
+
+$$
+min_{f,w,v} \sum_{i=1}^{n_l} (y_i - f(x_i))^2+ \sum_{j=1}^{n_u} [v_j w_j (\hat{y_j} - f(x_j)^2\\ 
++ \lambda(\frac{1}{2}v_j^2-v_j)]+\mu(w^TKw+kw) + \gamma|f|^2 \\
+s.t. w_j \in [0,1], v_j \in [0,1], \forall j=1,...,n_u \\
+where, \hat{y_j} = -sign(f(x_j))
+$$
+
   其中，$v$是自步学习中的数据权重，衡量了数据学习成本的难易程度，$w$是主动学习中的数据权重。该算法定义self-paced regularizer为$\frac{1}{2}||v||^{2}-\sum_{j=1}^{n_{u}}v_{j}$，这个regularizer的第一项是权重的正则项，保证数据权重尽可能平滑，第二项是self-paced的主要控制部分（配合$\lambda$参数），当无标签数据项的误差大于$\lambda$的时候，$v$的最优解是0，反之是1。因此，通过控制$\lambda$的大小，可以实现对难易样本的选择，当$\lambda$比较小的时候，误差项大于$\lambda$的数据相对较多，这些数据对应的$v$会比较小，即，哪些$v$比较大的数据被入选到本轮训练，这些数据具有较小的误差，也就是一些easy to learn的样本。
 
-  对于主动学习部分的权重，文章假设本次都通过Active Learning选择出了最具有代表性的样本，那么无标签数据和标签数据的分布应该会很相似的，所以本文通过Maximum Mean Discrepancy（MMD）的方式，在kernel空间下来比较两个分布，期望这两个分布相似，也就对应了公式中的$\mu$那一坨。
+对于主动学习部分的权重，文章假设本次都通过Active Learning选择出了最具有代表性的样本，那么无标签数据和标签数据的分布应该会很相似的，所以本文通过Maximum Mean Discrepancy（MMD）的方式，在kernel空间下来比较两个分布，期望这两个分布相似，也就对应了公式中的$\mu$那一坨。
 
 # 2. 课程学习算法
 
@@ -141,9 +143,11 @@ CL关注模型的学习是从易到难，在样本或Task层面上来说，CL优
 ## 2.2 Self-paced Learning
 
 自步学习是一个很大的方向，本文仅做简单介绍。SPL旨在训练模型的时候，同时学习训练数据的顺序，这里的顺序是通过给样本赋予不同权重来实现的。这里的权重值一般是通过数据似然或者分类误差来设置。考虑一下的优化问题：
+
 $$
 (w_{t+1}, v_{t+1}) = argmin_{w,v} r(w)+\sum_{t=1}^n v_if(x_i,y_i;w) - \frac{1}{k}\sum_{t=1}^nv_i
 $$
+
 其中，$v$衡量了数据的难易程度，当 $f > \frac{1}{k}$，$v$的最优解是0，反正，当$f < \frac{1}{k}$，$v$的最优解是1。当$k$取很大的值时，只有很少的$f$会入选，这些$f$对应的数据，是远离决策边界，具有很大的likelihood，是属于easy to learn的样本，反之是hard的。因此，训练的时候，需要在每轮优化迭代中，不断的减小$k$值。
 
 
@@ -157,11 +161,13 @@ $$
 ## 2.3 Balanced CL
 
 Balanced CL算法除了考虑难易程度以外，还考虑了数据多样性，希望在每轮选的样本中，class分布均匀，便于模型均衡的学到各类的信息。比如，可以在优化目标里增加了一个约束条件，限制每次选择的结果里，每个类别都包含，限制每个选出的样本集合中，属于第$i$类的数据至少有一个。
+
 $$
 
 || y_i + 1 ||_0 \ge 1
 
 $$
+
 参考文献：
 
 1. 【ICCV 2015】A Self-paced Multiple-instance Learning Framework for Co-saliency Detection
@@ -171,6 +177,7 @@ $$
 ## 2.4 Self-paced CL 
 
 一般来说，传统的CL是预设好了课程，self-paced learning (SPL)是要一边训练一边学习课程，Self-paced CL算法是合并了一下，设计了一个函数（记为$f$）来控制SPL，而课程学习的先验信息则是通过约束条件控制。如下式所示，$\Phi$表示预设好的课程集。
+
 $$
 min_{w,v} \sum^n_{i=1} L(y_i,g(x_i,w)) + \lambda f(v)\\
 s.t. v \in \Phi
@@ -192,11 +199,13 @@ Teacher-Student CL模型是基于Teacher-Student架构，传统Teacher-Student�
 | ![](/img/kecheng_exp6.png) | ![](/img/kecheng_exp7.png) |
 
 因此，Teacher网络（ScreenerNet）的输出是样本重要性$w_{x}$，网络中计算两个loss，一个是加权的loss $e_{x}^{weight}$，一个是未加权的loss $e_{x}$，前者用来更新student网络，后者用来更新teacher网络。teacher网络的loss定义如下，希望让不重要的样本上，error要小，并且要小到有一定的margin gap（$M$)
+
 $$
 
 \sum_{x \in X} ( (1-w_x)^2 e_x + w_x^2 \max(M-e_x, 0) ) + 其他正则
 
 $$
+
 参考文献:
 
 1. 【arxiv 2018】ScreenerNet
