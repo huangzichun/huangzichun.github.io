@@ -38,7 +38,7 @@ tags:
 
 总的来说，课程可以看成是若干个task组成的有向无环图（如果只有一个task，那么课程是一个有序的Experience，下文如无明确说明，都指代是Task）。这里的有向无环图允许Task之间是一对一的序列，也可以是多对一的关系。因此，我们希望能巧妙的为某个目标学习任务制定专门的前驱任务，以供模型良好的学习。以下图为例，如果我们的目标任务是希望Agent在第三个地图上把椅子移动到蓝色的房间，那么，我们或许可以先制定前两个相对简单的地图，以供模型学习。这种制定或者生成课程的过程就称作课程学习。
 
-![](../img/kecheng_exp1.png)
+![](/img/kecheng_exp1.png)
 
 
 
@@ -51,7 +51,7 @@ tags:
 
 | Task-level：模型不变，改变数据/Task的顺序 | Model-level：数据不变，改变模型复杂度     |
 | ---------------------------- | ---------------------------- |
-| ![](../img/kecheng_exp2.png) | ![](../img/kecheng_exp3.png) |
+| ![](/img/kecheng_exp2.png) | ![](/img/kecheng_exp3.png) |
 
 
 
@@ -129,7 +129,7 @@ CL关注模型的学习是从易到难，在样本或Task层面上来说，CL优
 
 原始的课程学习，最初由09年Bengio提出，认为模型训练的时候，应该先训练简单的数据，然后不断的提升数据复杂度。这里**对数据的简单与复杂的判断是预先给定的，属于priori rule**。这些先验规则由人工给定，比如在训练Language Model的时候，从短文本开始训练，后期不断增加文档长度；或者在学习几何形状的时候，从简单的形状开始学习（比如正三角形，正方形，圆形），再到复杂形状（椭圆，矩形，任意三角形）。
 
-![](../img/kecheng_exp5.png)
+![](/img/kecheng_exp5.png)
 
 参考文献：
 
@@ -189,7 +189,7 @@ Teacher-Student CL模型是基于Teacher-Student架构，传统Teacher-Student�
 
 | 原理图                          | 模型信息流                        |
 | ---------------------------- | ---------------------------- |
-| ![](../img/kecheng_exp6.png) | ![](../img/kecheng_exp7.png) |
+| ![](/img/kecheng_exp6.png) | ![](/img/kecheng_exp7.png) |
 
 因此，Teacher网络（ScreenerNet）的输出是样本重要性$w_{x}$，网络中计算两个loss，一个是加权的loss $e_{x}^{weight}$，一个是未加权的loss $e_{x}$，前者用来更新student网络，后者用来更新teacher网络。teacher网络的loss定义如下，希望让不重要的样本上，error要小，并且要小到有一定的margin gap（$M$)
 $$
@@ -205,7 +205,7 @@ $$
 
 Progressive CL算法考虑task从容易到困难的学习，即考虑模型本身，而不是数据。比如认为任务开始训练的时候，dropout的比例比较应该少一点，到训练后期在增加比例；亦或是在训练GAN的时候，分层训练，先训练复杂度小的GAN，然后慢慢提升模型复杂度
 
-![](../img/kecheng_exp8.png)
+![](/img/kecheng_exp8.png)
 
 参考文献：
 
