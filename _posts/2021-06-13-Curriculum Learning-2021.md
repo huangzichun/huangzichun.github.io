@@ -262,8 +262,8 @@ Progressive CL算法考虑task从容易到困难的学习，即考虑模型本�
 
 # 5. Survey
 
-1. [Curriculum Learning: A Survey](https://arxiv.org/abs/2101.10382)
+- [Curriculum Learning: A Survey](https://arxiv.org/abs/2101.10382)
 
-2. [Curriculum Learning for Reinforcement Learning Domains: A Framework and Survey](https://arxiv.org/abs/2003.04960v1)
+- [Curriculum Learning for Reinforcement Learning Domains: A Framework and Survey](https://arxiv.org/abs/2003.04960v1)
 
-3. [Automatic Curriculum Learning For Deep RL: A Short Survey](https://arxiv.org/abs/2003.04664)
+- [Automatic Curriculum Learning For Deep RL: A Short Survey](https://arxiv.org/abs/2003.04664)
