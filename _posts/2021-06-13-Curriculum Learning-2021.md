@@ -49,9 +49,9 @@ tags:
 - Task-level的方式，在每次模型训练中的重点在于改变训练数据或者改变本次训练的Task，从数据或Task的角度实现由易到难，引导模型学习；
 - Model-level的方式，需要改变模型的复杂程度。它可以看做是一种非凸优化算法continuation method，从一个简单光滑的Objective function开始优化，然后这个function慢慢的转化成一个不那么光滑，不那么好优化的Objective function，直到完成转化成我们最终想要的目标function。
 
-| Task-level：模型不变，改变数据/Task的顺序 | Model-level：数据不变，改变模型复杂度     |
-| ---------------------------- | ---------------------------- |
-| ![](/img/kecheng_exp2.png) | ![](/img/kecheng_exp3.png) |
+| Task-level：模型不变，改变数据/Task的顺序 | Model-level：数据不变，改变模型复杂度   |
+| ---------------------------- | -------------------------- |
+| ![](/img/kecheng_exp2.png)   | ![](/img/kecheng_exp3.png) |
 
 
 
@@ -74,7 +74,13 @@ PS：在文献中，通常是Task-Level的算法巨大多数。
   - 传统的课程学习，课程的顺序是在模型开始训练之前就预先给定了，这种方式没发做到根据模型的学习效果，实时更新反馈新的排序
   - 随着技术的不断发展，Automatic Sequencing的算法越来越多。这种方式允许模型在训练的同时，根据模型学习效果，实时更新Sequencing。就像上课一样，老师根据学生的学习效果调整教学形式。
 - **课程知识迁移**
-  - 为了保证模型能在不同由易到难的Task上越学越好，需要模型能将前驱Task上学习到的“知识”灵活的应用到后续的任务上。要达到这个效果，需要在不同task上实现知识迁移。比如，用本轮模型的参数来初始化下一个task的模型参数。
+  - 为了保证模型能在不同由易到难的Task上越学越好，需要模型能将前驱Task上学习到的“知识”灵活的应用到后续的任务上。要达到这个效果，需要在不同task上实现知识迁移。比如，
+
+    - **low-level knowledge transfer**：用本轮训练完备后生成的组件（比如，policy，value function V / Q，task model / Agent），初始化下一个task或者 target task的参数
+    - **high-level knowledge transfer**：不是直接通过初始化参数的方式来做知识传递，而是用部分组件的信息来引导target task的学习，比如partial policies或者shaping reward
+    - **no transfer**：如果只有一个task，即target task，也就不涉及task knowledge transfer了，做好样本顺序管理就好了
+
+    ​
 
 
 
@@ -163,9 +169,7 @@ $$
 Balanced CL算法除了考虑难易程度以外，还考虑了数据多样性，希望在每轮选的样本中，class分布均匀，便于模型均衡的学到各类的信息。比如，可以在优化目标里增加了一个约束条件，限制每次选择的结果里，每个类别都包含，限制每个选出的样本集合中，属于第$i$类的数据至少有一个。
 
 $$
-
 || y_i + 1 ||_0 \ge 1
-
 $$
 
 参考文献：
@@ -194,16 +198,14 @@ $$
 
 Teacher-Student CL模型是基于Teacher-Student架构，传统Teacher-Student假设Teacher是个复杂模型，学习能力强，Student是个简单模型，学习能力相对较弱。Teacher-Student希望在相同输入的情况下，Student能拟合Teacher的输出，达到简化模型的效果，便于模型解释和监控的目的。而Teacher-Student CL模型，将teacher用来判断数据重要性，student结合teacher的信息，并且学习task本身。
 
-| 原理图                          | 模型信息流                        |
-| ---------------------------- | ---------------------------- |
+| 原理图                        | 模型信息流                      |
+| -------------------------- | -------------------------- |
 | ![](/img/kecheng_exp6.png) | ![](/img/kecheng_exp7.png) |
 
 因此，Teacher网络（ScreenerNet）的输出是样本重要性$w_{x}$，网络中计算两个loss，一个是加权的loss $e_{x}^{weight}$，一个是未加权的loss $e_{x}$，前者用来更新student网络，后者用来更新teacher网络。teacher网络的loss定义如下，希望让不重要的样本上，error要小，并且要小到有一定的margin gap（$M$)
 
 $$
-
 \sum_{x \in X} ( (1-w_x)^2 e_x + w_x^2 \max(M-e_x, 0) ) + 其他正则
-
 $$
 
 参考文献:
@@ -222,60 +224,46 @@ Progressive CL算法考虑task从容易到困难的学习，即考虑模型本�
 2. 【ICLR 2018】Progressive Growing of GAN
 
 
-
 # 3. CL for Reinforcement Learning
 
-## 3.1 定义
-
-## 3.2 Why CL for RL
-
-## 3.3 What CL Control
-
-## 3.4 What CL Optimize
-
-## 3.5 分类
-
-- intermediate task generation
-- Curriculum representation
-- Transfer Method
-- Curriculum adaptivity
-- Curriculum Sequencer
-- Evaluation metric
+强化学习模型的训练一直以难搞出名，对于一些非常难训练的task来说（比如sparse reward），这时候CL可以提供一些 auxiliary task，让Agent慢慢学习到更好，希望用来构造通用性更强，稳定性更强的Agent。所以，有不少工作将CL用来做multi-goals RL，或者用来做exploration。一个超级伟大远景是希望借助CL的思想，实现Agent在简单任务 -> 模拟环境任务 -> 真实环境的任务的质的飞跃（手动滑稽）。那么，具体怎么操作呢？
 
 
 
+## 3.1 What CL Control
 
+在强化学习算法中，可以分为On-policy 和 Off-policy两种，前者算法框架中，学习policy所需的样本是原于该π本身，比如REINFORCE算法，而Off-policy是指从别的策略（叫做behaviour policy）中采样，来更新我们想要的策略（target policy），这种方式最大的好处就在于可以做policy exploration，比如DQN算法。对应这两种RL的算法，CL也有两种迎合方式
 
-
-
-## 3.6 算法
-
-- Task Generation
-- Sequencing
-  - Sampling Sequencing
-  - co-learning
-  - reward and intial / terminal state distribution changes
-  - no restriction
-    - MDP-based Sequencing
-    - Combinatorial optimization and search
-    - Graph-based Sequencing
-    - Auxiliary Problem
-  - human in the loop
-- Transfer Learning
-
+- **CL for Data Collection**
+  - 一般用在on-policy算法上
+  - 他可以：
+    - 影响RL Task的Agent初始状态，初始状态距离终点很近，就是easy task，初始状态距离终点很远，就是hard task
+    - 影响Reward function，比如，给予探索未知的动作更高的reward，随着探索的增加，未知也越少，task变难；或者，修改达到target的评估标准，一开始要求的accuracy要求很低（投篮，碰着篮板就行），后面慢慢提高（要进球才行）
+    - 影响Agent Goal，对于multi-goal的setting下，用来制定实现各个goal的顺序，选择优先达实现哪些goal（连续goal和离散goal都可以适用）
+    - 甚至在一些特殊的场景下（比如，Self-play），用到Opponents的选择上，选择优先和哪个对手进行对抗，比如，选择更有挑战性的对手（measured by winning rate）
+- **CL for Data Exploitation**
+  - 一般用在off-policy算法上
+  - 允许在Agent不执行的情况下，mentally experience执行某个动作后的效果，有一点Planning的味道，实现方式一般是在experience replay上做文章，比如，在对replay buffer采样的时候，优先选择一些reward高或者根据信息量的样本（Prioritized experience replay），或者，直接按照从简单到困难的原则，自己构造一些replay buffer。这里的Prioritized experience replay（ICLR 2016）是一个比较有意思的方法，核心思想是从replay buffer里优先选择TD Error大的样本，因为Bellman Equation是想最小化这些误差。这个想法就和SVM的SMO算法一样，贪心的选择最违反KKT条件的支持向量来优化
 
 
 
 
 # 4. Open Questions
 
-- Task Knowledge Transfer
-- Task Generation Automatically
-- Reusing Curricula
-- Task Generation + Sequencing
-- Theoretical Results
-- Understanding General Principles for Curriculum Design
+- **Task Knowledge Transfer**：现在只能判断which task to transfer from，不能做到what to extract and what to transfer。现在不同task之间的knowledge的形式已经写死了，比如通过指定形式的policy，value或者model的参数传递
+- **Task Generation Automatically**：目前还做不到真正全自动生成task，现在要么是假设有一个task pool可供选择，或者，人工给定一些生成task的规则，实现semi-automatic
+- **Reusing Curricula**：CL的训练时间太长，一个Agent要用多个task来训练。能不能做到，一次训练多个Agent，每个都有不同的target task
+- **Task Generation + Sequencing**：怎么结合两个一起做。现在大多数都是分开做的
+- **Theoretical Results**：When and Why CL is useful
+- **Understanding General Principles for Curriculum Design**：可解释性的课程设计
 
 
 
 
+# 5. Survey
+
+1. [Curriculum Learning: A Survey]: https://arxiv.org/abs/2101.10382	"Curriculum Learning: A Survey"
+
+2. [Curriculum Learning for Reinforcement Learning Domains: A Framework and Survey]: https://arxiv.org/abs/2003.04960v1	"Curriculum Learning for Reinforcement Learning Domains: A Framework and Survey"
+
+3. [Automatic Curriculum Learning For Deep RL: A Short Survey]: https://arxiv.org/abs/2003.04664	"Automatic Curriculum Learning For Deep RL: A Short Survey"
