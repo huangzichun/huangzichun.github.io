@@ -112,3 +112,9 @@ service-worker: true
 #        href: "https://developer.apple.com/"
 #    }
 #]
+friends: [
+   {
+       title: "Scholar",
+       href: "https://scholar.google.com/citations?user=acAfKhEAAAAJ"
+   }
+]
